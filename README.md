@@ -37,7 +37,6 @@ vagrant ssh
 
 - 64bit Centos 7 virtual machine with virtual 64GB HDD, 3GB RAM and legacy LAMP stack from [Bento](https://app.vagrantup.com/bento/boxes/centos-7).
 - Custom `.bashrc` to modify bash settings inside the virtual machine.
-- Updated Yum repositories for Centos 6 after End Of Life.
 - Configure LAMP settings from the host machine instead of inside the virtual machine.
 - Provisioning in `bash` because the commands can easily be copied/pasted inside a VM or server for troubleshooting.
 - Keep multiple Vagrant boxes in a separate location than your projects/code location.
