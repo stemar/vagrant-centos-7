@@ -6,7 +6,6 @@ timedatectl | grep 'Time zone:'
 echo '==> Cleaning yum cache'
 
 yum -q -y makecache fast
-# yum -q -y clean all
 rm -rf /var/cache/yum
 
 echo '==> Installing Linux tools'
@@ -14,7 +13,6 @@ echo '==> Installing Linux tools'
 cp $VM_CONFIG_PATH/bashrc /home/vagrant/.bashrc
 chown vagrant:vagrant /home/vagrant/.bashrc
 yum -q -y install nano tree zip unzip whois
-yum -q -y update openssl
 
 echo '==> Setting Git 2.x repository'
 
@@ -27,7 +25,7 @@ yum -q -y install svn git
 
 echo '==> Installing Apache'
 
-yum -q -y install httpd mod_ssl
+yum -q -y install httpd mod_ssl openssl
 usermod -a -G apache vagrant
 chown -R root:apache /var/log/httpd
 cp $VM_CONFIG_PATH/localhost.conf /etc/httpd/conf.d/localhost.conf
@@ -35,7 +33,7 @@ cp $VM_CONFIG_PATH/virtualhost.conf /etc/httpd/conf.d/virtualhost.conf
 sed -i 's|GUEST_SYNCED_FOLDER|'$GUEST_SYNCED_FOLDER'|' /etc/httpd/conf.d/virtualhost.conf
 sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/virtualhost.conf
 
-echo '==> Setting MariaDB 10.3 repository'
+echo '==> Setting MariaDB 10.5 repository'
 
 rpm --import --quiet https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 cp $VM_CONFIG_PATH/MariaDB.repo /etc/yum.repos.d/MariaDB.repo
@@ -44,21 +42,27 @@ echo '==> Installing MariaDB'
 
 yum -q -y install MariaDB-server MariaDB-client
 
-# echo '==> Setting PHP 7.2 repository'
+echo '==> Setting PHP 7.4 repository'
 
-# yum -q -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-# yum -q -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
-# yum -q -y install yum-utils
-# yum-config-manager -q -y --enable remi-php72 > /dev/null
-# yum -q -y update
+rpm --import --quiet https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+yum -q -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm --import --quiet https://rpms.remirepo.net/RPM-GPG-KEY-remi
+yum -q -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+yum -q -y install yum-utils
+yum-config-manager -q -y --enable remi-php74 > /dev/null
+yum -q -y update
 
 echo '==> Installing PHP'
 
-yum -q -y install php php-common \
+yum -q -y install php php-cli php-common \
     php-bcmath php-devel php-gd php-imap php-intl php-ldap \
     php-mbstring php-pecl-mcrypt php-mysqlnd php-opcache php-pdo php-pear \
     php-pecl-xdebug php-pspell php-soap php-tidy php-xml php-xmlrpc
 cp $VM_CONFIG_PATH/php.ini.htaccess /var/www/.htaccess
+
+echo '==> Installing Python 3'
+
+yum -q -y install python3
 
 echo '==> Installing Adminer'
 
@@ -74,13 +78,13 @@ sed -i 's|login($we,$F){if($F=="")return|login($we,$F){if(true)|' /usr/share/adm
 echo '==> Starting Apache'
 
 apachectl configtest
-systemctl start httpd.service
-systemctl enable httpd.service
+systemctl start httpd
+systemctl enable httpd
 
 echo '==> Starting MariaDB'
 
-systemctl start mariadb.service
-systemctl enable mariadb.service
+systemctl start mariadb
+systemctl enable mariadb
 mysqladmin -u root password ""
 
 echo '==> Versions:'
@@ -94,3 +98,4 @@ echo $(httpd -V | head -n1)
 echo $(mysql -V)
 echo $(php -v | head -n1)
 echo $(python --version)
+echo $(python3 --version)
