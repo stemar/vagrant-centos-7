@@ -69,11 +69,11 @@ echo '==> Installing Adminer'
 if [ ! -d /usr/share/adminer ]; then
     mkdir -p /usr/share/adminer
     curl -LsS https://www.adminer.org/latest-en.php -o /usr/share/adminer/adminer.php
+    sed -i 's|login($we,$F){if($F=="")return|login($we,$F){if(true)|' /usr/share/adminer/adminer.php
     curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/designs/nicu/adminer.css -o /usr/share/adminer/adminer.css
 fi
 cp $VM_CONFIG_PATH/adminer.conf /etc/httpd/conf.d/adminer.conf
 sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/adminer.conf
-sed -i 's|login($we,$F){if($F=="")return|login($we,$F){if(true)|' /usr/share/adminer/adminer.php
 
 echo '==> Starting Apache'
 
