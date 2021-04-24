@@ -174,7 +174,7 @@ cat /etc/httpd/conf.d/adminer.conf
 sudo cat /etc/httpd/logs/error_log
 ```
 
-Check MySQL databases:
+Check MariaDB databases:
 
 ```bash
 mysql -u root
