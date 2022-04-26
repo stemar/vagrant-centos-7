@@ -35,7 +35,7 @@ sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/virtualhost
 
 echo '==> Setting MariaDB 10.5 repository'
 
-rpm --import --quiet https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+rpm --import --quiet https://mirror.rackspace.com/mariadb/yum/RPM-GPG-KEY-MariaDB
 cp $VM_CONFIG_PATH/MariaDB.repo /etc/yum.repos.d/MariaDB.repo
 
 echo '==> Installing MariaDB'
