@@ -33,7 +33,7 @@ cp $VM_CONFIG_PATH/virtualhost.conf /etc/httpd/conf.d/virtualhost.conf
 sed -i 's|GUEST_SYNCED_FOLDER|'$GUEST_SYNCED_FOLDER'|' /etc/httpd/conf.d/virtualhost.conf
 sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/virtualhost.conf
 
-echo '==> Setting MariaDB 10.5 repository'
+echo '==> Setting MariaDB 10.6 repository'
 
 rpm --import --quiet https://mirror.rackspace.com/mariadb/yum/RPM-GPG-KEY-MariaDB
 cp $VM_CONFIG_PATH/MariaDB.repo /etc/yum.repos.d/MariaDB.repo
