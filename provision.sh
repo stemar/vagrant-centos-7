@@ -82,12 +82,12 @@ apachectl configtest
 
 echo '==> Starting Apache'
 
-systemctl start httpd
+systemctl restart httpd
 systemctl enable httpd
 
 echo '==> Starting MariaDB'
 
-systemctl start mariadb
+systemctl restart mariadb
 systemctl enable mariadb
 mysqladmin -u root password ""
 
