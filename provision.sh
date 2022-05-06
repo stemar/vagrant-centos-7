@@ -1,9 +1,10 @@
-echo '==> Setting time zone to '$TIMEZONE
-
 timedatectl set-timezone $TIMEZONE
+
+echo '==> Setting '$(timedatectl | grep 'Time zone:' | xargs)
 
 echo '==> Resetting yum cache'
 
+echo 'deltarpm=0' | tee -a /etc/yum.conf &>/dev/null
 yum -q -y clean all
 rm -rf /var/cache/yum
 yum -q -y makecache
@@ -19,9 +20,9 @@ echo '==> Setting Git 2.x repository'
 rpm --import --quiet http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
 yum -q -y install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm
 
-echo '==> Installing Subversion and Git'
+echo '==> Installing Git and Subversion'
 
-yum -q -y install svn git
+yum -q -y install git svn
 
 echo '==> Installing Apache'
 
@@ -40,7 +41,7 @@ cp /vagrant/config/MariaDB.repo /etc/yum.repos.d/MariaDB.repo
 
 echo '==> Installing MariaDB'
 
-yum -q -y install MariaDB-server MariaDB-client
+yum -q -y install MariaDB-server MariaDB-client &>/dev/null
 
 echo '==> Setting PHP 7.4 repository'
 
@@ -78,6 +79,9 @@ yum -q -y install python3
 
 echo '==> Testing Apache configuration'
 
+if [ ! -L /etc/systemd/system/multi-user.target.wants/httpd.service ] ; then
+    ln -s /usr/lib/systemd/system/httpd.service /etc/systemd/system/multi-user.target.wants/httpd.service
+fi
 apachectl configtest
 
 echo '==> Starting Apache'
@@ -87,6 +91,9 @@ systemctl enable httpd
 
 echo '==> Starting MariaDB'
 
+if [ ! -L /etc/systemd/system/multi-user.target.wants/mariadb.service ] ; then
+    ln -s /usr/lib/systemd/system/mariadb.service /etc/systemd/system/multi-user.target.wants/mariadb.service
+fi
 systemctl restart mariadb
 systemctl enable mariadb
 mysqladmin -u root password ""
