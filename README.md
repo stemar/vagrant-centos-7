@@ -24,7 +24,7 @@ In host machine terminal:
 
 ```bash
 mkdir -p ~/VM && cd $_
-git clone --depth 1 https://github.com/stemar/vagrant-centos-7.git centos-7
+git clone --depth=1 https://github.com/stemar/vagrant-centos-7.git centos-7
 cd ~/VM/centos-7
 vagrant up --provision
 vagrant ssh
@@ -172,6 +172,8 @@ cat /etc/redhat-release
 httpd -V
 mysql -V
 php -v
+python --version
+python3 --version
 svn --version
 git --version
 openssl version
