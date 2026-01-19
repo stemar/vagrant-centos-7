@@ -2,6 +2,11 @@ timedatectl set-timezone $TIMEZONE
 
 echo '==> Setting '$(timedatectl | grep 'Time zone:' | xargs)
 
+echo '==> Setting Centos 7 yum repositories'
+
+sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
+sed -i 's|^#baseurl=http://mirror.centos.org|baseurl=http://vault.epel.cloud|g' /etc/yum.repos.d/CentOS-*
+
 echo '==> Resetting yum cache'
 
 echo 'deltarpm=0' | tee -a /etc/yum.conf &>/dev/null
@@ -13,7 +18,7 @@ echo '==> Installing Linux tools'
 
 cp /vagrant/config/bashrc /home/vagrant/.bashrc
 chown vagrant:vagrant /home/vagrant/.bashrc
-yum -q -y install nano tree zip unzip whois
+yum -q -y install nano tree zip unzip whois &>/dev/null
 
 echo '==> Setting Git 2.x repository'
 
@@ -22,17 +27,17 @@ yum -q -y install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-gi
 
 echo '==> Installing Git and Subversion'
 
-yum -q -y install git svn
+yum -q -y install git svn &>/dev/null
 
 echo '==> Installing Apache'
 
-yum -q -y install httpd mod_ssl openssl
+yum -q -y install httpd &>/dev/null
 usermod -a -G apache vagrant
 chown -R root:apache /var/log/httpd
 cp /vagrant/config/localhost.conf /etc/httpd/conf.d/localhost.conf
 cp /vagrant/config/virtualhost.conf /etc/httpd/conf.d/virtualhost.conf
 sed -i 's|GUEST_SYNCED_FOLDER|'$GUEST_SYNCED_FOLDER'|' /etc/httpd/conf.d/virtualhost.conf
-sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/virtualhost.conf
+sed -i 's|HOST_HTTP_PORT|'$HOST_HTTP_PORT'|' /etc/httpd/conf.d/virtualhost.conf
 
 echo '==> Setting MariaDB 10.6 repository'
 
@@ -45,18 +50,20 @@ yum -q -y install MariaDB-server MariaDB-client &>/dev/null
 
 echo '==> Setting PHP 7.4 repository'
 
-rpm --import --quiet https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
-yum -q -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm --import --quiet https://rpms.remirepo.net/RPM-GPG-KEY-remi
-yum -q -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-yum-config-manager -q -y --enable remi-php74 &>/dev/null
-yum -q -y update
+{
+    rpm --import --quiet https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+    yum -q -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    rpm --import --quiet https://rpms.remirepo.net/RPM-GPG-KEY-remi
+    yum -q -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    yum-config-manager -q -y --enable remi-php74 &>/dev/null
+    yum -q -y update
+} &>/dev/null
 
 echo '==> Installing PHP'
 
 yum -q -y install php php-cli php-common \
     php-bcmath php-devel php-gd php-imap php-intl php-ldap php-mbstring php-pecl-mcrypt php-mysqlnd php-opcache \
-    php-pdo php-pear php-pecl-xdebug php-pgsql php-pspell php-soap php-tidy php-xmlrpc php-yaml php-zip
+    php-pdo php-pear php-pecl-xdebug php-pgsql php-pspell php-soap php-tidy php-xmlrpc php-yaml php-zip &>/dev/null
 cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
 PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
 sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
@@ -74,11 +81,17 @@ if [ ! -d /usr/share/adminer ]; then
 fi
 cp /vagrant/config/adminer.php /usr/share/adminer/adminer.php
 cp /vagrant/config/adminer.conf /etc/httpd/conf.d/adminer.conf
-sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/httpd/conf.d/adminer.conf
+sed -i 's|HOST_HTTP_PORT|'$HOST_HTTP_PORT'|' /etc/httpd/conf.d/adminer.conf
 
 echo '==> Installing Python 3'
 
-yum -q -y install python3
+yum -q -y install python3 &>/dev/null
+
+echo '==> Adding HTTP service to firewall'
+
+sudo setenforce Permissive
+firewall-cmd --add-service=http --permanent &>/dev/null
+firewall-cmd --reload &>/dev/null
 
 echo '==> Testing Apache configuration'
 
@@ -101,7 +114,8 @@ systemctl restart mariadb
 systemctl enable mariadb
 mysqladmin -u root password ""
 
-echo '==> Versions:'
+echo
+echo '==> Stack versions <=='
 
 cat /etc/redhat-release
 openssl version
