@@ -28,25 +28,25 @@
 
 ## 1.0.4 - 2023-01-15
 
-## Changed
+### Changed
 
 - Updated to PHP 7.4.
 - Updated Adminer.
 
 ## 1.0.3 - 2022-05-06
 
-## Changed
+### Changed
 
 - Moved box name to `settings.yaml`.
 - Added checks in `provision.sh`.
 
 ## 1.0.2 - 2022-04-28
 
-## Added
+### Added
 
 - Added Python 3.
 
-## Changed
+### Changed
 
 - Removed VM_CONFIG_PATH.
 - Fixed dnf cache.
@@ -54,7 +54,7 @@
 
 ## 1.0.1 - 2021-04-26
 
-## Added
+### Added
 
 - Added SSH forwarded ports to `settings.yaml`.
 - Added `:php_error_reporting` to `settings.yaml`.
