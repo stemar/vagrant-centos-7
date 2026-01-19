@@ -10,8 +10,6 @@
 
 ### Changed
 
-- Replaced yum repositories URLs in `/etc/yum.repos.d/CentOS-*` files.
-    - Original CentOS mirrors no longer supported.
 - Updated YAML array format in `settings.yaml`.
     - Added `:id` to all `:forwarded_ports`.
 - Updated `Vagrantfile` by adding local variables.
@@ -25,6 +23,9 @@
 ### Fixed
 
 - Updated Adminer to version 5+ plugin code and files.
+- Fixed the URLs for End Of Life repositories.
+    - Replaced yum repositories URLs in `/etc/yum.repos.d/CentOS-*` files.
+    - Original CentOS mirrors no longer supported.
 
 ## 1.0.4 - 2023-01-15
 
@@ -49,8 +50,11 @@
 ### Changed
 
 - Removed VM_CONFIG_PATH.
-- Fixed dnf cache.
 - Updated README.
+
+### Fixed
+
+- Fixed dnf cache.
 
 ## 1.0.1 - 2021-04-26
 
