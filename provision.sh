@@ -64,9 +64,7 @@ echo '==> Installing PHP'
 yum -q -y install php php-cli php-common \
     php-bcmath php-devel php-gd php-imap php-intl php-ldap php-mbstring php-pecl-mcrypt php-mysqlnd php-opcache \
     php-pdo php-pear php-pecl-xdebug php-pgsql php-pspell php-soap php-tidy php-xmlrpc php-yaml php-zip &>/dev/null
-cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
-PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
-sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
+cp /vagrant/config/php.ini /var/www/php.ini
 
 echo '==> Installing Adminer'
 
